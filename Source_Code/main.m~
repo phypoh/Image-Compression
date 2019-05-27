@@ -2,7 +2,7 @@
 load lighthouse
 qstep = 17;
 
-method = 'dwt';
+method = 'lbt';
 
 bit_limit = 40960;
 numbits = 256^2*8;
@@ -31,11 +31,10 @@ elseif method == 'dwt'
     end
 end
 
-numbits = sum(vlc(:,2));
+numbits = sum(vlc(:,2))
 %[peaksnr, snr] = psnr(X, Z)
-err = std(abs(X(:)-Z(:)));
-ssimval = ssim(Z,X);,
+%err = std(abs(X(:)-Z(:)))
+%ssimval = ssim(Z,X)
 
-
-fprintf('\nMethod: %s\nNumber of bits: %i\nRMS Value: %0.4f. \nSSIM value: %0.4f.\n', method, numbits, err, ssimval);
+fprintf('\n RMS Value: %0.4f. \n SSIM', peaksnr);
 draw(beside(X,Z))

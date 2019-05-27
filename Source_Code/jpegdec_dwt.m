@@ -1,4 +1,4 @@
-function Z = jpegdec(vlc, qstep, N, M, bits, huffval, dcbits, W, H)
+function Z = jpegdec(vlc, qstep, output, N, M, bits, huffval, dcbits, W, H)
 
 % JPEGDEC Decodes a (simplified) JPEG bit stream to an image
 %
@@ -20,19 +20,22 @@ function Z = jpegdec(vlc, qstep, N, M, bits, huffval, dcbits, W, H)
 %  Z is the output greyscale image
 
 % Presume some default values if they have not been provided
-error(nargchk(2, 9, nargin, 'struct'));
+error(nargchk(2, 10, nargin, 'struct'));
 opthuff = true;
-if (nargin<9)
+if (nargin<10)
   H = 256;
   W = 256;
-  if (nargin<7)
+  if (nargin<8)
     dcbits = 8;
-    if (nargin<6)
+    if (nargin<7)
       opthuff = false;
-      if (nargin<4)
-        if (nargin<3)
+      if (nargin<5)
+        if (nargin<4)
           N = 8;
           M = 8;
+          if (nargin<3)
+              output = false;
+          end
         else
           M = N;
         end
@@ -49,9 +52,13 @@ level = 3;
 scan = diagscan(M);
 
 if (opthuff)
-  disp('Generating huffcode and ehuf using custom tables')
+  if output
+    disp('Generating huffcode and ehuf using custom tables')
+  end
 else
-  disp('Generating huffcode and ehuf using default tables')
+  if output
+    disp('Generating huffcode and ehuf using default tables')
+  end
   [bits huffval] = huffdflt(1);
 end
 % Define starting addresses of each new code length in huffcode.
@@ -76,7 +83,9 @@ i = 1;
 Zq = zeros(H, W);
 t=1:M;
 
-disp('Decoding rows')
+if output
+    disp('Decoding rows')
+end
 for r=0:M:(H-M),
   for c=0:M:(W-M),
     yq = zeros(M,M);
@@ -125,12 +134,15 @@ for r=0:M:(H-M),
   end
 end
 
-fprintf(1, 'Inverse quantising to step size of %i\n', qstep);
+if output
+    fprintf(1, 'Inverse quantising to step size of %i\n', qstep);
+end
 dwtstep = func_dwtstepmse(level)*qstep;
 Zi = func_invquantdwt(Zq, dwtstep);
 
-
-fprintf(1, 'Inverse Level %i DWT\n', level);
+if output
+    fprintf(1, 'Inverse Level %i DWT\n', level);
+end
 Z = func_multiinverse(Zi, level);
 Z = Z + 128;
 
