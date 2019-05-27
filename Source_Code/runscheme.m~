@@ -1,0 +1,22 @@
+%Overall run scheme
+qstep = 17;
+
+method = 'dwt';
+
+if method == 'dct'
+    [vlc bits huffval] = jpegenc(X, qstep);
+    Z = jpegdec(vlc, qstep);
+ 
+elseif method == 'lbt'
+    [vlc bits huffval] = jpegenc_lbt(X, qstep);
+    Z = jpegdec_lbt(vlc, qstep);
+elseif method == 'dwt'
+    [vlc bits huffval] = jpegenc_dwt(X, qstep);
+    Z = jpegdec_dwt(vlc, qstep);
+end
+
+sum(vlc(:,2))
+[peaksnr, snr] = psnr(X, Z)
+  
+%fprintf('\n The Peak-SNR value is %0.4f', peaksnr);
+draw(beside(X,Z))
