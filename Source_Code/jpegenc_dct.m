@@ -27,7 +27,7 @@ global huffhist  % Histogram of usage of Huffman codewords.
 
 % Presume some default values if they have not been provided
 error(nargchk(2, 7, nargin, 'struct'));
-warning('off','last')
+%warning('off','last')
 if ((nargout~=1) && (nargout~=3)) error('Must have one or three output arguments'); end
 if (nargin<7)
   dcbits = 8;
