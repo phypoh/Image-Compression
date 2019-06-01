@@ -1,4 +1,4 @@
-function [Z bits] = jpegdec_dct_arith(code, counts, key_values, qstep, output, N)
+function [Z bits] = jpegdec_dct_arith(code, count_value, Y_seq, qstep, Y_seq_min, output, N)
 
 % JPEGDEC Decodes a (simplified) JPEG bit stream to an image
 %
@@ -20,34 +20,35 @@ function [Z bits] = jpegdec_dct_arith(code, counts, key_values, qstep, output, N
 %  Z is the output greyscale image
 
 % Presume some default values if they have not been provided
-error(nargchk(2, 6, nargin, 'struct'));
-if (nargin<6)
+error(nargchk(2, 7, nargin, 'struct'));
+if (nargin<7)
     N = 8;
-    if (nargin<5)
+    if (nargin<6)
         output = false;
     end
 end
 
-
-dseq = arithdeco(code,counts,256*256);
+% Decode
+dseq = arithdeco(code,count_value,length(Y_seq));
 
 if output
     fprintf(1, 'Inverse quantising to step size of %i\n', qstep);
 end
 
-for k=1:(256*256)
-    dseq(k) = key_values(dseq(k));
-end
 
-Zi = reshape(dseq, 256, 256);
-code_size = size(code);
-bits = code_size(2);
+dseq = dseq - 1 - abs(Y_seq_min); % make back to zero
+
+Zq = reshape(dseq, 256, 256); %reshape to matrix
+
+Zi = quant2(Zq,qstep,qstep); %back to 1:256
+
+code_size = size(code); 
+bits = code_size(2); % number of bits used
 
 if output
     fprintf(1, 'Inverse %i x %i DCT\n', N, N);
 end
 C8=dct_ii(N);
 Z=colxfm(colxfm(Zi',C8')',C8');
-
 
 return
