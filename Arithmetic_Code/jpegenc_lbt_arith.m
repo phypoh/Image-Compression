@@ -60,7 +60,7 @@ Y_seq = reshape(Yq,1,[]);
 Y_seq_min = min(Y_seq(:));
 Y_seq = Y_seq + abs(Y_seq_min) + 1; %turn back to positive numbers
 
-step_num = max(Y_seq(:)); % Take round down integer
+step_num = max(Y_seq); % Take round down integer
 
 % Make count vector
 count_value = zeros(1,step_num);

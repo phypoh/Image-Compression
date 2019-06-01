@@ -43,7 +43,8 @@ dseq = dseq - 1 - abs(Y_seq_min); % make back to zero
 Zq = reshape(dseq, 256, 256); %reshape to matrix
 
 % De-quantise
-Zi = func_invquantdwt(Zq, qstep); %back to 256
+dwtstep = func_dwtstepmse(level)*qstep;
+Zi = func_invquantdwt(Zq, dwtstep); %back to 256
 
 code_size = size(code); 
 bits = code_size(2); % number of bits used
@@ -53,6 +54,5 @@ if output
 end
 Z = func_multiinverse(Zi, level);
 Z = Z + 128;
-
 
 return

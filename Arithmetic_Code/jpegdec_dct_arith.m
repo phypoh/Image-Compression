@@ -40,7 +40,7 @@ dseq = dseq - 1 - abs(Y_seq_min); % make back to zero
 
 Zq = reshape(dseq, 256, 256); %reshape to matrix
 
-Zi = quant2(Zq,qstep,qstep); %back to 1:256
+Zi = quant2(Zq,qstep); %back to 1:256
 
 code_size = size(code); 
 bits = code_size(2); % number of bits used

@@ -1,5 +1,5 @@
 %Overall run scheme
-load bridge
+load flamingo
 
 bit_limit = 40960;
 
@@ -68,13 +68,9 @@ else
     disp('Error occured during comaprison. Setting default to lbt.')  
 end
 
-vlc = vlc_map(method);
-qstep = qstep_map(method);edi
-
 fprintf('\nMethod: %s', method)
 fprintf('\nNumber of bits: %i', numbits_map(method))
 fprintf('\nRMS Value: %0.4f', err(method))
 fprintf('\nSSIM Value: %0.4f\n', ssimval(method))
-save('cmp.mat','vlc','qstep', 'method')
 
 draw(beside(X,Z))
