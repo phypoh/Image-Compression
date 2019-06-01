@@ -1,4 +1,4 @@
-function [code counts key_values] = jpegenc_dct_arith(X, qstep, output, N)
+function [code count_value Y_seq Y_seq_min] = jpegenc_dct_arith(X, qstep, output, N)
     
 % JPEGENC Encode an image to a (simplified) JPEG bit stream
 %
@@ -28,7 +28,7 @@ global huffhist  % Histogram of usage of Huffman codewords.
 % Presume some default values if they have not been provided
 error(nargchk(2, 4, nargin, 'struct'));
 %warning('off','last')
-if ((nargout~=1) && (nargout~=3)) error('Must have one or three output arguments'); end
+if ((nargout~=1) && (nargout~=4)) error('Must have one or four output arguments'); end
 if (nargin<4)
     N = 8; 
     if (nargin<3)
@@ -47,44 +47,27 @@ Y=colxfm(colxfm(X,C8)',C8)';
 if output
     fprintf(1, 'Quantising to step size of %i\n', qstep); 
 end
-Yq = quantise(Y,qstep);
+
+% Quantise to 1,2,3,4...
+Yq = quant1(Y,qstep,qstep);
 Y_seq = reshape(Yq,1,[]);
 
-count_key = [];
+Y_seq_min = min(Y_seq(:));
+Y_seq = Y_seq + abs(Y_seq_min) + 1; %turn back to positive numbers
 
-for i=1:(256*256)
-    if ismember(Y_seq(i),count_key)==0
-        count_key = [count_key Y_seq(i)];
-    elseif ismember(Y_seq(i),count_key)==1
-        continue
-    end 
-end 
+step_num = max(Y_seq(:)); % Take round down integer
 
-[x y] = size(count_key);
-count_value = zeros(1,y);
-
-count_map = containers.Map(count_key,count_value);
-
-for i=1:(256*256)
-    if isKey(count_map,Y_seq(i)) == 1
-        count_map(Y_seq(i)) = count_map(Y_seq(i)) + 1;
-    else
-        disp('Wrong key')
-        return
+% Make count vector
+count_value = zeros(1,step_num);
+for i=1:step_num
+    count_value(i) = sum(Y_seq(:) == i);
+end
+for i=1:step_num
+    if count_value(i) == 0
+        count_value(i) = 1;
     end
 end
 
-counts = cell2mat(values(count_map));
-key_values = cell2mat(keys(count_map));
-
-for i=1:(256*256)
-    for j=1:y
-        if key_values(j) == Y_seq(i)
-            Y_seq(i) = j;
-        end
-    end
-end
-
-code = arithenco(Y_seq,counts);
+code = arithenco(Y_seq,count_value); % arith code
 
 return

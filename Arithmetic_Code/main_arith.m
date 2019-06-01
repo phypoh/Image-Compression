@@ -1,5 +1,5 @@
 %Overall run scheme
-load lighthouse
+load bridge
 
 bit_limit = 40960;
 
@@ -14,11 +14,10 @@ Z_dict = containers.Map;
 
 disp('Running DCT method...')
 while numbits > bit_limit
-    [code counts key_values] = jpegenc_dct_arith(X, qstep);
-    [Z bits] = jpegdec_dct_arith(code, counts, key_values, qstep);
+    [code count_value Y_seq Y_min] = jpegenc_dct_arith(X, qstep);
+    [Z bits] = jpegdec_dct_arith(code, count_value, Y_seq, qstep, Y_min);
     numbits = bits;
     qstep = qstep + 1;
-    disp([qstep bits])
 end
 disp('Done.')
 numbits_map('dct') = bits;
@@ -30,11 +29,10 @@ disp('Running LBT method...')
 qstep = 30;
 numbits = 256^2*8;
 while numbits > bit_limit
-    [code counts key_values] = jpegenc_lbt_arith(X, qstep);
-    [Z bits] = jpegdec_lbt_arith(code, counts, key_values, qstep);
+    [code count_value Y_seq Y_min] = jpegenc_lbt_arith(X, qstep);
+    [Z bits] = jpegdec_lbt_arith(code, count_value, Y_seq, qstep, Y_min);
     numbits = bits;
     qstep = qstep + 1;
-    disp([qstep bits])
 end
 disp('Done.')
 numbits_map('lbt') = bits;
@@ -47,11 +45,10 @@ disp('Running DWT method...')
 qstep = 30;
 numbits = 256^2*8;
 while numbits > bit_limit
-    [code counts key_values] = jpegenc_dwt_arith(X, qstep);
-    [Z bits] = jpegdec_dwt_arith(code, counts, key_values, qstep);
+    [code count_value Y_seq Y_min] = jpegenc_dwt_arith(X, qstep);
+    [Z bits] = jpegdec_dwt_arith(code, count_value, Y_seq, qstep, Y_min);
     numbits = bits;
     qstep = qstep + 1;
-    disp([qstep bits])
 end
 disp('Done.')
 numbits_map('dwt') = bits;
@@ -71,9 +68,13 @@ else
     disp('Error occured during comaprison. Setting default to lbt.')  
 end
 
+vlc = vlc_map(method);
+qstep = qstep_map(method);edi
+
 fprintf('\nMethod: %s', method)
 fprintf('\nNumber of bits: %i', numbits_map(method))
 fprintf('\nRMS Value: %0.4f', err(method))
 fprintf('\nSSIM Value: %0.4f\n', ssimval(method))
+save('cmp.mat','vlc','qstep', 'method')
 
 draw(beside(X,Z))
