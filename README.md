@@ -5,8 +5,13 @@ Collaborators: Cindy Lam and Phyllis Poh
 
 
 ## Scripts added to template code:
-### main.m
-Overall super-scheme, that compresses and compares images, then returns the image with the best image quality that fits the bit limit)
+### main_dc.m
+Overall super-scheme, that compresses and compares images, then returns the image with the best image quality that fits the bit limit
+Improved huffman coding by changing the dc component coding to varying codeword length
+Changed to using seconf default filter (chrominance)
+
+### maindec_dc.m
+The decoder using the cmp.mat file returned by main_dc.m to reconstruct the compressed image.
 
 ### func_dwtstepmse.m
 Function which generates and returns dwtstep, a matrix of step sizes to be used for DWT
