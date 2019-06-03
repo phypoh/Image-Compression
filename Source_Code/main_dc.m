@@ -1,5 +1,9 @@
 %Overall run scheme
-load flamingo
+load bridge
+
+X_uint8 = X;
+X = double(X);
+
 warning off;
 bit_limit = 40960;
 
@@ -16,8 +20,8 @@ qstep_map = containers.Map;
 
 disp('Running DCT method...')
 while numbits > bit_limit
-    [vlc bits huffval] = jpegenc_dct(X, qstep);
-    Z = jpegdec_dct(vlc, qstep);
+    [vlc bits huffval] = jpegenc_dct_dc(X, qstep);
+    Z = jpegdec_dct_dc(vlc, qstep);
     %numbits = sum(vlc(:,2));
     numbits = vlctest(vlc);
     qstep = qstep + 1;
@@ -35,8 +39,8 @@ disp('Running LBT method...')
 qstep = 17;
 numbits = 256^2*8;
 while numbits > bit_limit
-    [vlc bits huffval] = jpegenc_lbt(X, qstep);
-    Z = jpegdec_lbt(vlc, qstep);
+    [vlc bits huffval] = jpegenc_lbt_dc(X, qstep);
+    Z = jpegdec_lbt_dc(vlc, qstep);
     %numbits = sum(vlc(:,2));
     numbits = vlctest(vlc);
     qstep = qstep + 1;
@@ -54,11 +58,12 @@ disp('Running DWT method...')
 qstep = 17;
 numbits = 256^2*8;
 while numbits > bit_limit
-    [vlc bits huffval] = jpegenc_dwt(X, qstep);
-    Z = jpegdec_dwt(vlc, qstep);
+    [vlc bits huffval] = jpegenc_dwt_dc(X, qstep);
+    Z = jpegdec_dwt_dc(vlc, qstep);
     %numbits = sum(vlc(:,2));
     numbits = vlctest(vlc);
     qstep = qstep + 1;
+    
 end
 disp('Done.')
 numbits_map('dwt') = sum(vlc(:,2));
